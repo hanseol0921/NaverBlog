@@ -10,7 +10,7 @@
         .search-input { 
             width: 400px; 
             padding: 10px 15px; 
-            border: 2px solid #1DB85C; /* 네이버 대표 색상 계열 */
+            border: 2px solid #1DB85C;
             border-radius: 20px 0 0 20px; 
             font-size: 16px; 
             outline: none;
@@ -25,6 +25,14 @@
             font-size: 16px;
             font-weight: bold;
         }
+        .rank-link {
+            margin-bottom: 10px;
+        }
+        .rank-link a {
+            text-decoration: none;
+            color: #ff5500;
+            font-weight: bold;
+        }
         .result-list { 
             max-width: 800px; 
             margin: 0 auto; 
@@ -37,15 +45,29 @@
             margin-bottom: 10px; 
             border-radius: 5px; 
         }
-        .result-item h3 { margin-top: 0; font-size: 18px; color: #0000FF; /* 네이버 링크색상 */ }
+        .result-item h3 { 
+            margin-top: 0; 
+            font-size: 18px; 
+            color: #0000FF;
+        }
         .result-item p { font-size: 14px; color: #333; }
         .result-item a { text-decoration: none; }
-        .result-item span { display: block; font-size: 12px; color: #777; margin-top: 5px; }
+        .result-item span { 
+            display: block; 
+            font-size: 12px; 
+            color: #777; 
+            margin-top: 5px; 
+        }
     </style>
 </head>
 <body>
     <div class="search-container">
         <h1>🍽️ 맛집 블로그 검색</h1>
+
+        <p class="rank-link">
+            <a href="/rank">🔥 많이 검색된 키워드 순위 보기</a>
+        </p>
+
         <form class="search-form" method="POST" action="/blog">
             <input class="search-input" type="text" name="query" placeholder="검색어를 입력하세요 (예: 강남 맛집)">
             <button class="search-button" type="submit">검색</button>

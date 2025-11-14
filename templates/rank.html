@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>검색어 랭킹</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* 🔥 왼쪽 정렬 유지 */
+        .back-link {
+            text-align: left; 
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* 🔥 랭킹은 전체 중앙정렬 */
+        .rank-list {
+            text-align: center;
+            list-style-position: inside;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        li { margin: 8px 0; }
+    </style>
+</head>
+
+<body>
+
+<h1>검색어 랭킹 TOP 20</h1>
+
+<p class="back-link">
+    <a href="/">← 돌아가기</a>
+</p>
+
+{% if rankings %}
+    <ol class="rank-list">
+        {% for keyword, count in rankings %}
+        <li>{{ keyword }} <strong>({{ count }}회 검색)</strong></li>
+        {% endfor %}
+    </ol>
+{% else %}
+    <p style="text-align:center;">아직 저장된 검색어가 없습니다.</p>
+{% endif %}
+
+</body>
+</html>
