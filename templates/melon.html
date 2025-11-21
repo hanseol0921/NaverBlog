@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>멜론 차트</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .page {
+            max-width: 960px;
+            margin: 30px auto 40px;
+            padding: 0 16px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .title-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: #1db954;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .nav-links a {
+            font-size: 13px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+            margin-bottom: 18px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #eafaf1;
+            color: #1db954;
+            border: 1px solid #c9f0d8;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1 1 220px;
+            min-width: 0;
+            padding: 9px 12px;
+            border-radius: 999px;
+            border: 1px solid #d0d7e2;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #1db954;
+            box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.15);
+        }
+
+        .search-button {
+            padding: 9px 18px;
+            border-radius: 999px;
+            border: none;
+            background: #1db954;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .search-button:hover {
+            background: #18a745;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 0 8px;
+        }
+
+        .section-sub {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .artist-result {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0;
+        }
+
+        .artist-result li {
+            padding: 6px 4px;
+            font-size: 14px;
+        }
+
+        .artist-result li span.rank {
+            display: inline-block;
+            min-width: 40px;
+            font-weight: 600;
+            color: #1db954;
+        }
+
+        .artist-empty {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .chart-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+
+        .chart-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 4px;
+            border-bottom: 1px solid #f1f3f7;
+            font-size: 14px;
+        }
+
+        .chart-item:last-child {
+            border-bottom: none;
+        }
+
+        .chart-rank {
+            flex: 0 0 40px;
+            text-align: center;
+            font-weight: 700;
+            color: #1db954;
+        }
+
+        .chart-meta {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chart-artist {
+            font-size: 12px;
+            color: #777;
+            margin-top: 2px;
+        }
+
+        .chart-empty {
+            font-size: 13px;
+            color: #999;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 16px 14px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .chart-item {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <p>
+    <a href="/melon/artist-rank" 
+       style="text-decoration:none; color:#1db954; font-weight:bold;">
+       🎤 가수별 차트 랭킹 보기
+    </a>
+</p>
+
+    <!-- 상단 헤더 -->
+    <div class="header">
+        <div class="title-box">
+            <h1>멜론 차트 TOP 100</h1>
+            <div class="subtitle">실시간 차트를 기반으로 가수별 곡 정보를 조회할 수 있어요.</div>
+        </div>
+        <div class="nav-links">
+            <a href="/">← 돌아가기</a>
+        </div>
+    </div>
+
+    <!-- 가수 검색 카드 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">가수 검색</div>
+            <span class="badge">Artist Finder</span>
+        </div>
+        <form class="search-form" action="/melon/artist" method="POST">
+            <input
+                class="search-input"
+                type="text"
+                name="artist"
+                placeholder="가수 이름을 입력하세요 (예: 아이유, 뉴진스)"
+                value="{% if artist_name %}{{ artist_name }}{% endif %}"
+            >
+            <button class="search-button" type="submit">검색</button>
+        </form>
+
+        {% if artist_name %}
+            <div style="margin-top: 16px;">
+                <p class="section-title">"{{ artist_name }}" 검색 결과</p>
+
+                {% if artist_songs %}
+                    <ul class="artist-result">
+                        {% for s in artist_songs %}
+                        <li>
+                            <span class="rank">{{ s.rank }}위</span>
+                            <span class="title">{{ s.title }}</span>
+                            <span class="artist"> · {{ s.artist }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="artist-empty">해당 가수는 현재 TOP100 차트에 없습니다.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 전체 차트 카드 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">실시간 멜론 차트</div>
+            <span class="badge">TOP 100</span>
+        </div>
+
+        {% if songs %}
+            <ul class="chart-list">
+                {% for s in songs %}
+                <li class="chart-item">
+                    <div class="chart-rank">{{ s.rank }}</div>
+                    <div class="chart-meta">
+                        <div class="chart-title">{{ s.title }}</div>
+                        <div class="chart-artist">{{ s.artist }}</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="chart-empty">차트 데이터를 불러오지 못했습니다.</p>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>

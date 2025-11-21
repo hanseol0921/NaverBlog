@@ -2,6 +2,8 @@ import sqlite3
 from flask import Flask, render_template, request
 import requests
 import json
+import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -14,9 +16,11 @@ DB_PATH = "naverblog.db"
 
 
 def init_db():
-    """처음 실행할 때 검색어 테이블 없으면 만들어 줌"""
+    """처음 실행할 때 검색어/멜론 차트 테이블 없으면 만들어 줌"""
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
+
+    # 검색어 테이블
     cur.execute("""
         CREATE TABLE IF NOT EXISTS search_keyword (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,8 +29,20 @@ def init_db():
             last_searched TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
+
+    # 멜론 차트 테이블
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS melon_chart (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            rank INTEGER,
+            title TEXT,
+            artist TEXT
+        );
+    """)
+
     conn.commit()
     conn.close()
+
 
 
 def save_search_keyword(keyword: str):
@@ -48,6 +64,121 @@ def save_search_keyword(keyword: str):
 
 
 db_initialized = False
+
+
+def get_melon_top100():
+    url = "https://www.melon.com/chart/index.htm"
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        )
+    }
+
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, "html.parser")
+
+    songs = []
+    rows = soup.select("tr.lst50") + soup.select("tr.lst100")
+
+    for row in rows:
+        rank = row.select_one("span.rank").get_text(strip=True)
+        title = row.select_one("div.ellipsis.rank01 a").get_text(strip=True)
+        artist = row.select_one("div.ellipsis.rank02 a").get_text(strip=True)
+
+        songs.append({
+            "rank": rank,
+            "title": title,
+            "artist": artist
+        })
+
+    return songs
+
+
+def save_melon_chart_to_db(songs):
+    """멜론 차트 전체를 DB에 덮어쓰기 저장"""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    # 기존 차트 싹 지우고
+    cur.execute("DELETE FROM melon_chart")
+
+    # 새 차트 저장
+    for s in songs:
+        cur.execute(
+            "INSERT INTO melon_chart (rank, title, artist) VALUES (?, ?, ?)",
+            (int(s["rank"]), s["title"], s["artist"])
+        )
+
+    conn.commit()
+    conn.close()
+
+
+def load_melon_chart_from_db():
+    """DB에 저장된 멜론 차트 불러오기 (리스트[dict])"""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("SELECT rank, title, artist FROM melon_chart ORDER BY rank ASC")
+    rows = cur.fetchall()
+    conn.close()
+
+    songs = []
+    for rank, title, artist in rows:
+        songs.append({
+            "rank": rank,
+            "title": title,
+            "artist": artist
+        })
+    return songs
+
+
+def search_artist_in_chart(artist_name: str):
+    """가수 이름으로 멜론 차트에서 곡 검색"""
+    if not artist_name:
+        return []
+
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT rank, title, artist
+        FROM melon_chart
+        WHERE artist LIKE ?
+        ORDER BY rank ASC
+    """, (f"%{artist_name}%",))
+    rows = cur.fetchall()
+    conn.close()
+
+    results = []
+    for rank, title, artist in rows:
+        results.append({
+            "rank": rank,
+            "title": title,
+            "artist": artist
+        })
+    return results
+
+def get_artist_song_count_ranking():
+    """가수별 TOP100 내 곡 수 랭킹"""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT artist, COUNT(*) as song_count
+        FROM melon_chart
+        GROUP BY artist
+        ORDER BY song_count DESC, artist ASC
+    """)
+    rows = cur.fetchall()
+    conn.close()
+
+    ranking = []
+    for artist, count in rows:
+        ranking.append({
+            "artist": artist,
+            "count": count
+        })
+    return ranking
+
 
 @app.before_request
 def before_request():
@@ -104,7 +235,53 @@ def rank():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('main.html')
+
+@app.route("/melon")
+def melon_chart():
+    # 1) 멜론 차트 크롤링
+    songs = get_melon_top100()
+    # 2) DB에 저장
+    save_melon_chart_to_db(songs)
+    # 3) 기본 화면: 차트만 보여주고, 가수 검색 결과는 없음
+    return render_template(
+        "melon.html",
+        songs=songs,
+        artist_songs=None,
+        artist_name=None
+    )
+
+@app.route("/melon/artist", methods=["POST"])
+def melon_artist():
+    artist_name = request.form.get("artist", "").strip()
+
+    # DB에서 현재 저장된 차트 불러오기
+    songs = load_melon_chart_from_db()
+    # 가수 이름으로 검색
+    artist_songs = search_artist_in_chart(artist_name)
+
+    return render_template(
+        "melon.html",
+        songs=songs,
+        artist_songs=artist_songs,
+        artist_name=artist_name
+    )
+
+
+@app.route("/test")
+def test():
+    url = "https://m2.melon.com/m6/chart/realTime/new/today.json"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    res = requests.get(url, headers=headers)
+
+    return res.text
+
+@app.route("/melon/artist-rank")
+def melon_artist_rank():
+    ranking = get_artist_song_count_ranking()
+    return render_template("melon_artist_rank.html", ranking=ranking)
+
+
 
 
 if __name__ == '__main__':

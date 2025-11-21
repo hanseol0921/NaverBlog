@@ -4,9 +4,66 @@
     <meta charset="UTF-8">
     <title>네이버 맛집 블로그 검색</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .search-container { text-align: center; margin-bottom: 30px; }
-        .search-form { display: flex; justify-content: center; align-items: center; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .search-container { 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        /* 상단 네비 버튼들 */
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .nav-button.rank {
+            background: #ffe9d9;
+            color: #ff5500;
+            border-color: #ffb28a;
+        }
+
+        .nav-button.rank:hover {
+            background: #ffd4b5;
+        }
+
+        .nav-button.melon {
+            background: #eafaf1;
+            color: #1DB85C;
+            border-color: #c9f0d8;
+        }
+
+        .nav-button.melon:hover {
+            background: #d6f3e4;
+        }
+
+        .search-form { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+
         .search-input { 
             width: 400px; 
             padding: 10px 15px; 
@@ -15,6 +72,7 @@
             font-size: 16px; 
             outline: none;
         }
+
         .search-button {
             padding: 10px 20px;
             background-color: #1DB85C;
@@ -25,33 +83,42 @@
             font-size: 16px;
             font-weight: bold;
         }
-        .rank-link {
-            margin-bottom: 10px;
+
+        .search-button:hover {
+            background-color: #18a745;
         }
-        .rank-link a {
-            text-decoration: none;
-            color: #ff5500;
-            font-weight: bold;
-        }
+
         .result-list { 
             max-width: 800px; 
             margin: 0 auto; 
             list-style: none; 
             padding: 0; 
         }
+
         .result-item { 
+            background: #fff;
             border: 1px solid #eee; 
             padding: 15px; 
             margin-bottom: 10px; 
-            border-radius: 5px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
+
         .result-item h3 { 
             margin-top: 0; 
             font-size: 18px; 
             color: #0000FF;
         }
-        .result-item p { font-size: 14px; color: #333; }
-        .result-item a { text-decoration: none; }
+
+        .result-item p { 
+            font-size: 14px; 
+            color: #333; 
+        }
+
+        .result-item a { 
+            text-decoration: none; 
+        }
+
         .result-item span { 
             display: block; 
             font-size: 12px; 
@@ -64,9 +131,11 @@
     <div class="search-container">
         <h1>🍽️ 맛집 블로그 검색</h1>
 
-        <p class="rank-link">
-            <a href="/rank">🔥 많이 검색된 키워드 순위 보기</a>
-        </p>
+        <!-- 🔹 상단 네비: 검색어 랭킹 & 멜론 차트 이동 버튼 -->
+        <div class="nav-links">
+            <a class="nav-button rank" href="/rank">🔥 검색어 랭킹 보기</a>
+            <a class="nav-button melon" href="/melon">🎵 멜론 차트 보러가기</a>
+        </div>
 
         <form class="search-form" method="POST" action="/blog">
             <input class="search-input" type="text" name="query" placeholder="검색어를 입력하세요 (예: 강남 맛집)">
