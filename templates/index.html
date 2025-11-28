@@ -2,157 +2,168 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>네이버 맛집 블로그 검색</title>
+    <title>맛집 블로그 검색</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px; 
-            background: #f5f7fb;
+        body {
+            font-family: 'Pretendard', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f2f4f7;
             color: #222;
         }
 
-        .search-container { 
-            text-align: center; 
-            margin-bottom: 30px; 
+        .container {
+            max-width: 760px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
         h1 {
+            text-align: center;
+            font-size: 32px;
             margin-bottom: 10px;
+            font-weight: 700;
         }
 
-        /* 상단 네비 버튼들 */
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        /* 뒤로가기 */
+        .back-link {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .back-link a {
+            font-size: 14px;
+            text-decoration: none;
+            color: #6a6a6a;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* 검색 박스 */
+        .search-box {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            text-align: center;
             margin-bottom: 20px;
         }
 
-        .nav-button {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: bold;
-            text-decoration: none;
-            border: 1px solid transparent;
-        }
-
-        .nav-button.rank {
-            background: #ffe9d9;
-            color: #ff5500;
-            border-color: #ffb28a;
-        }
-
-        .nav-button.rank:hover {
-            background: #ffd4b5;
-        }
-
-        .nav-button.melon {
-            background: #eafaf1;
-            color: #1DB85C;
-            border-color: #c9f0d8;
-        }
-
-        .nav-button.melon:hover {
-            background: #d6f3e4;
-        }
-
-        .search-form { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
-
-        .search-input { 
-            width: 400px; 
-            padding: 10px 15px; 
-            border: 2px solid #1DB85C;
-            border-radius: 20px 0 0 20px; 
-            font-size: 16px; 
+        .search-box input {
+            width: 75%;
+            padding: 14px 20px;
+            font-size: 16px;
+            border: 2px solid #dfe3e8;
+            border-radius: 12px;
             outline: none;
         }
 
-        .search-button {
-            padding: 10px 20px;
-            background-color: #1DB85C;
+        .search-box input:focus {
+            border-color: #1db85c;
+        }
+
+        .search-box button {
+            margin-top: 15px;
+            padding: 12px 26px;
+            background: #1db85c;
+            border: none;
+            border-radius: 12px;
             color: white;
-            border: 2px solid #1DB85C;
-            border-radius: 0 20px 20px 0;
-            cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background: #19a151;
+        }
+
+        /* 버튼: 검색어 랭킹 이동 */
+        .ranking-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 18px;
+            font-size: 14px;
+            border-radius: 999px;
+            background: #ffe9d9;
+            border: 1px solid #ffb28a;
+            color: #ff5500;
+            text-decoration: none;
             font-weight: bold;
         }
 
-        .search-button:hover {
-            background-color: #18a745;
+        .ranking-button:hover {
+            background: #ffd4b5;
         }
 
-        .result-list { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            list-style: none; 
-            padding: 0; 
+        /* 결과 카드 리스트 */
+        .result-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
-        .result-item { 
-            background: #fff;
-            border: 1px solid #eee; 
-            padding: 15px; 
-            margin-bottom: 10px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .result-item h3 { 
-            margin-top: 0; 
-            font-size: 18px; 
-            color: #0000FF;
+        .result-item h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #0056d6;
         }
 
-        .result-item p { 
-            font-size: 14px; 
-            color: #333; 
+        .result-item p {
+            margin: 10px 0;
+            color: #444;
+            line-height: 1.5;
+            font-size: 15px;
         }
 
-        .result-item a { 
-            text-decoration: none; 
-        }
-
-        .result-item span { 
-            display: block; 
-            font-size: 12px; 
-            color: #777; 
-            margin-top: 5px; 
+        .result-item span {
+            font-size: 13px;
+            color: #777;
         }
     </style>
 </head>
+
 <body>
-    <div class="search-container">
+    <div class="container">
+
         <h1>🍽️ 맛집 블로그 검색</h1>
 
-        <!-- 🔹 상단 네비: 검색어 랭킹 & 멜론 차트 이동 버튼 -->
-        <div class="nav-links">
-            <a class="nav-button rank" href="/rank">🔥 검색어 랭킹 보기</a>
-            <a class="nav-button melon" href="/melon">🎵 멜론 차트 보러가기</a>
+        <div class="back-link">
+            <a href="/">← 홈으로 돌아가기</a>
         </div>
 
-        <form class="search-form" method="POST" action="/blog">
-            <input class="search-input" type="text" name="query" placeholder="검색어를 입력하세요 (예: 강남 맛집)">
-            <button class="search-button" type="submit">검색</button>
-        </form>
-    </div>
+        <div class="search-box">
+            <form method="POST" action="/blog">
+                <input type="text" name="query" placeholder="예: 강남 파스타 맛집">
+                <button type="submit">검색하기</button>
+            </form>
 
-    {% if search_results %}
-    <ul class="result-list">
-        {% for item in search_results %}
-        <li class="result-item">
-            <h3><a href="{{ item.link }}" target="_blank">{{ item.title | safe }}</a></h3>
-            <p>{{ item.description | safe }}</p>
-            <span>블로그명: {{ item.bloggername }} | 작성일: {{ item.postdate }}</span>
-        </li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+            <!-- 🔥 검색어 랭킹 이동 버튼 (디자인 통일) -->
+            <a class="ranking-button" href="/rank">🔥 검색어 랭킹 보기</a>
+        </div>
+
+        {% if search_results %}
+        <ul class="result-list">
+            {% for item in search_results %}
+            <li class="result-item">
+                <h3><a href="{{ item.link }}" target="_blank">{{ item.title | safe }}</a></h3>
+                <p>{{ item.description | safe }}</p>
+                <span>블로그명: {{ item.bloggername }} · 작성일: {{ item.postdate }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+    </div>
 </body>
 </html>

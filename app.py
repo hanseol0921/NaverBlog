@@ -68,32 +68,32 @@ db_initialized = False
 
 def get_melon_top100():
     url = "https://www.melon.com/chart/index.htm"
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/120.0.0.0 Safari/537.36"
-        )
-    }
+    headers = {"User-Agent": "Mozilla/5.0"}
 
-    res = requests.get(url, headers=headers)
-    soup = BeautifulSoup(res.text, "html.parser")
+    try:
+        res = requests.get(url, headers=headers, timeout=5)
 
-    songs = []
-    rows = soup.select("tr.lst50") + soup.select("tr.lst100")
+        if res.status_code != 200:
+            return None
 
-    for row in rows:
-        rank = row.select_one("span.rank").get_text(strip=True)
-        title = row.select_one("div.ellipsis.rank01 a").get_text(strip=True)
-        artist = row.select_one("div.ellipsis.rank02 a").get_text(strip=True)
+        soup = BeautifulSoup(res.text, "html.parser")
+        rows = soup.select("tr.lst50") + soup.select("tr.lst100")
 
-        songs.append({
-            "rank": rank,
-            "title": title,
-            "artist": artist
-        })
+        if not rows:
+            return None  # 멜론이 페이지 차단한 상황
 
-    return songs
+        songs = []
+        for row in rows:
+            rank = row.select_one("span.rank").get_text(strip=True)
+            title = row.select_one("div.ellipsis.rank01 a").get_text(strip=True)
+            artist = row.select_one("div.ellipsis.rank02 a").get_text(strip=True)
+            songs.append({"rank": rank, "title": title, "artist": artist})
+
+        return songs
+
+    except Exception:
+        return None
+
 
 
 def save_melon_chart_to_db(songs):
@@ -239,17 +239,14 @@ def home():
 
 @app.route("/melon")
 def melon_chart():
-    # 1) 멜론 차트 크롤링
     songs = get_melon_top100()
-    # 2) DB에 저장
-    save_melon_chart_to_db(songs)
-    # 3) 기본 화면: 차트만 보여주고, 가수 검색 결과는 없음
-    return render_template(
-        "melon.html",
-        songs=songs,
-        artist_songs=None,
-        artist_name=None
-    )
+
+    # 크롤링 실패하면 DB에서 불러오기
+    if not songs:
+        songs = load_melon_chart_from_db()
+
+    return render_template("melon.html", songs=songs, artist_songs=None, artist_name=None)
+
 
 @app.route("/melon/artist", methods=["POST"])
 def melon_artist():
