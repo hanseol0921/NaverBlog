@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # 네이버 API 인증 정보
 CLIENT_ID = "m6nZpyW187lm1c7iMKSH"
-CLIENT_SECRET = ""
+CLIENT_SECRET = "6yXrem4rjM"
 
 NAVER_API_URL = "https://openapi.naver.com/v1/search/blog.json"
 DB_PATH = "naverblog.db"

@@ -4,49 +4,105 @@
     <meta charset="UTF-8">
     <title>검색어 랭킹</title>
     <style>
-        body { font-family: Arial, sans-serif; }
+        body {
+            font-family: "Pretendard", Arial, sans-serif;
+            background: #f7f8fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 60px auto;
+            background: white;
+            border-radius: 14px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
 
         h1 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: 700;
+            color: #333;
         }
 
-        /* 🔥 왼쪽 정렬 유지 */
         .back-link {
-            text-align: left; 
-            margin-left: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        /* 🔥 랭킹은 전체 중앙정렬 */
+        .back-link a {
+            text-decoration: none;
+            color: #444;
+            font-size: 15px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
         .rank-list {
-            text-align: center;
-            list-style-position: inside;
-            padding: 0;
-            font-size: 18px;
+            padding-left: 0;
+            list-style: none;
+            margin-top: 10px;
         }
 
-        li { margin: 8px 0; }
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: #f1f3f5;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 17px;
+            color: #333;
+            transition: 0.2s ease;
+        }
+
+        .rank-item:hover {
+            background: #e7e9eb;
+        }
+
+        .keyword {
+            font-weight: 600;
+        }
+
+        .count {
+            color: #666;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #777;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
 <body>
 
-<h1>검색어 랭킹 TOP 20</h1>
+<div class="container">
+    <h1>검색어 랭킹 TOP 20</h1>
 
-<p class="back-link">
-    <a href="/">← 돌아가기</a>
-</p>
+    <div class="back-link">
+        <a href="/">← 돌아가기</a>
+    </div>
 
-{% if rankings %}
-    <ol class="rank-list">
-        {% for keyword, count in rankings %}
-        <li>{{ keyword }} <strong>({{ count }}회 검색)</strong></li>
-        {% endfor %}
-    </ol>
-{% else %}
-    <p style="text-align:center;">아직 저장된 검색어가 없습니다.</p>
-{% endif %}
+    {% if rankings %}
+        <ul class="rank-list">
+            {% for keyword, count in rankings %}
+            <li class="rank-item">
+                <span class="keyword">{{ keyword }}</span>
+                <span class="count">{{ count }}회</span>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-data">아직 저장된 검색어가 없습니다.</p>
+    {% endif %}
+</div>
 
 </body>
 </html>
